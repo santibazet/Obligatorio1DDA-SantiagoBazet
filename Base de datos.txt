@@ -1,0 +1,108 @@
+CREATE TABLE paises (
+    idPais INT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE ciudades (
+    idCiudad INT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(100) NOT NULL,
+    idPais INT NOT NULL,
+    FOREIGN KEY (idPais) REFERENCES paises(idPais) ON DELETE CASCADE
+);
+
+CREATE TABLE tiposdocumento (
+    idTipoDocumento INT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE huespedes (
+    idHuesped INT PRIMARY KEY AUTO_INCREMENT,
+    idPais INT NOT NULL,
+    idTipoDocumento INT NOT NULL,
+    nombre VARCHAR(100) NOT NULL,
+    apaterno VARCHAR(100) NOT NULL,
+    amaterno VARCHAR(100) NOT NULL,
+    numDocumento VARCHAR(20) NOT NULL UNIQUE,
+    fechaNacimiento DATE NOT NULL,
+    telefono VARCHAR(20),
+    FOREIGN KEY (idPais) REFERENCES paises(idPais) ON DELETE CASCADE,
+    FOREIGN KEY (idTipoDocumento) REFERENCES tiposdocumento(idTipoDocumento) ON DELETE CASCADE
+);
+
+CREATE TABLE tiposcama (
+    idTipoCama INT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE tiposhabitacion (
+    idTipoHabitacion INT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE hoteles (
+    idHotel INT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(100) NOT NULL,
+    estrellas INT NOT NULL,
+    idCiudad INT NOT NULL,
+    FOREIGN KEY (idCiudad) REFERENCES ciudades(idCiudad) ON DELETE CASCADE
+);
+
+CREATE TABLE habitaciones (
+    idHabitacion INT PRIMARY KEY AUTO_INCREMENT,
+    idHotel INT NOT NULL,
+    idTipoHabitacion INT NOT NULL,
+    idTipoCama INT NOT NULL,
+    cantCamas INT NOT NULL,
+    ocupada BOOLEAN NOT NULL DEFAULT FALSE,
+    FOREIGN KEY (idHotel) REFERENCES hoteles(idHotel) ON DELETE CASCADE,
+    FOREIGN KEY (idTipoHabitacion) REFERENCES tiposhabitacion(idTipoHabitacion) ON DELETE CASCADE,
+    FOREIGN KEY (idTipoCama) REFERENCES tiposcama(idTipoCama) ON DELETE CASCADE
+);
+
+CREATE TABLE caracteristicas (
+    idCaracteristica INT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE habitaciones_caracteristicas (
+    idHabitacion INT NOT NULL,
+    idCaracteristica INT NOT NULL,
+    PRIMARY KEY (idHabitacion, idCaracteristica),
+    FOREIGN KEY (idHabitacion) REFERENCES habitaciones(idHabitacion) ON DELETE CASCADE,
+    FOREIGN KEY (idCaracteristica) REFERENCES caracteristicas(idCaracteristica) ON DELETE CASCADE
+);
+
+CREATE TABLE reservas (
+    idReserva INT PRIMARY KEY AUTO_INCREMENT,
+    idHuesped INT NOT NULL,
+    cantPersonas INT NOT NULL,
+    observaciones TEXT,
+    fechaRes DATE NOT NULL,
+    fechaVencimiento DATE NOT NULL,
+    fechaInicio DATE NOT NULL,
+    FOREIGN KEY (idHuesped) REFERENCES huespedes(idHuesped) ON DELETE CASCADE
+);
+
+CREATE TABLE reservas_habitaciones (
+    idReserva INT NOT NULL,
+    idHabitacion INT NOT NULL,
+    PRIMARY KEY (idReserva, idHabitacion),
+    FOREIGN KEY (idReserva) REFERENCES reservas(idReserva) ON DELETE CASCADE,
+    FOREIGN KEY (idHabitacion) REFERENCES habitaciones(idHabitacion) ON DELETE CASCADE
+);
+
+CREATE TABLE tarifas (
+    idTarifa INT PRIMARY KEY AUTO_INCREMENT,
+    idTipoHabitacion INT NOT NULL,
+    precio DECIMAL(10, 2) NOT NULL,
+    fechaFinVigencia DATE NOT NULL,
+    FOREIGN KEY (idTipoHabitacion) REFERENCES tiposhabitacion(idTipoHabitacion) ON DELETE CASCADE
+);
+
+CREATE TABLE tarifas_reservas (
+    idReserva INT NOT NULL,
+    idTarifa INT NOT NULL,
+    PRIMARY KEY (idReserva, idTarifa),
+    FOREIGN KEY (idReserva) REFERENCES reservas(idReserva) ON DELETE CASCADE,
+    FOREIGN KEY (idTarifa) REFERENCES tarifas(idTarifa) ON DELETE CASCADE
+);
