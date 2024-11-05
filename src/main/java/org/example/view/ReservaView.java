@@ -2,6 +2,7 @@ package org.example.view;
 
 import org.example.controller.ReservaController;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class ReservaView {
@@ -24,30 +25,36 @@ public class ReservaView {
             System.out.println("5. Listar hoteles por fecha");
             System.out.println("6. Salir");
             System.out.print("Seleccione una opción: ");
-            option = scanner.nextInt();
 
-            switch (option) {
-                case 1:
-                    reservaController.createReserva();
-                    break;
-                case 2:
-                    reservaController.getAllReservas();
-                    break;
-                case 3:
-                    reservaController.updateReserva();
-                    break;
-                case 4:
-                    reservaController.deleteReserva();
-                    break;
-                case 5:
-                    reservaController.mostrarHotelesConHabitacionesDisponibles();
-                    return;
-                case 6:
-                    System.out.println("Saliendo...");
-                    return;
-                default:
-                    System.out.println("Opción no válida. Intente de nuevo.");
+            try {
+                option = scanner.nextInt();
+
+                switch (option) {
+                    case 1:
+                        reservaController.createReserva();
+                        break;
+                    case 2:
+                        reservaController.getAllReservas();
+                        break;
+                    case 3:
+                        reservaController.updateReserva();
+                        break;
+                    case 4:
+                        reservaController.deleteReserva();
+                        break;
+                    case 5:
+                        reservaController.mostrarHotelesConHabitacionesDisponibles();
+                        break;
+                    case 6:
+                        System.out.println("Saliendo...");
+                        return;
+                    default:
+                        System.out.println("Opción no válida. Intente de nuevo.");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Entrada no válida. Por favor, ingrese un número entero.");
+                scanner.nextLine();
             }
-        } while (option != 6);
+        } while (true);
     }
 }

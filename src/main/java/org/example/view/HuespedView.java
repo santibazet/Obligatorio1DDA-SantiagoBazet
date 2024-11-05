@@ -2,6 +2,7 @@ package org.example.view;
 
 import org.example.controller.HuespedController;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class HuespedView {
@@ -23,28 +24,33 @@ public class HuespedView {
             System.out.println("4. Eliminar huésped");
             System.out.println("5. Salir");
             System.out.print("Seleccione una opción: ");
-            option = scanner.nextInt();
 
-            switch (option) {
-                case 1:
-                    huespedController.createHuesped() ;
-                    break;
-                case 2:
-                    huespedController.getAllHuespedes();
-                    break;
-                case 3:
-                    huespedController.updateHuesped();
-                    break;
-                case 4:
-                    huespedController.deleteHuesped();
-                    break;
-                case 5:
-                    System.out.println("Saliendo...");
-                    return;
-                default:
-                    System.out.println("Opción no válida. Intente de nuevo.");
+            try {
+                option = scanner.nextInt();
+
+                switch (option) {
+                    case 1:
+                        huespedController.createHuesped();
+                        break;
+                    case 2:
+                        huespedController.getAllHuespedes();
+                        break;
+                    case 3:
+                        huespedController.updateHuesped();
+                        break;
+                    case 4:
+                        huespedController.deleteHuesped();
+                        break;
+                    case 5:
+                        System.out.println("Saliendo...");
+                        return;
+                    default:
+                        System.out.println("Opción no válida. Intente de nuevo.");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Entrada no válida. Por favor, ingrese un número entero.");
+                scanner.nextLine();
             }
-        } while (option != 5);
+        } while (true);
     }
 }
-

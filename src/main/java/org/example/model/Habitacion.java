@@ -1,4 +1,6 @@
 package org.example.model;
+import org.example.DAO.HabitacionDAO;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -11,7 +13,8 @@ public class Habitacion {
     private boolean ocupada;
     private List<Caracteristica> caracteristicas;
 
-    public Habitacion() {}
+    private HabitacionDAO habitacionDAO = new HabitacionDAO();
+
 
     public Habitacion(int idHabitacion, TipoHabitacion tipoHabitacion, boolean ocupada)
     {
@@ -70,9 +73,26 @@ public class Habitacion {
                 .append("Hotel: ").append(this.hotel.getNombre()).append("\n")
                 .append("Tipo de habitación: ").append(this.tipoHabitacion.getNombre()).append("\n")
                 .append("Tipo de cama: ").append(this.tipoCama.getNombre()).append("\n")
-                .append("Cantidad de camas: ").append(this.cantCamas).append("\n")
-                .append("Ocupada: ").append(this.ocupada ? "Sí" : "No").append("\n")
-                .append("Características: \n");
+                .append("Cantidad de camas: ").append(this.cantCamas).append("\n");
+
+        // Determina el estado de la ocupación según el criterio
+        if (!this.ocupada) {
+            sb.append("Ocupada: No\n");
+        } else {
+            // Determina si la habitación está ocupada por fuera o por el sistema
+            boolean ocupadaPorFuera = habitacionDAO.estaReservadaPorFuera(this.idHabitacion);
+            boolean ocupadaPorSistema = habitacionDAO.estaOcupadaPorSistema(this.idHabitacion);
+
+            if (ocupadaPorFuera) {
+                sb.append("Ocupada: Sí (Por fuera del sistema)\n");
+            } else if (ocupadaPorSistema) {
+                sb.append("Ocupada: Sí (Por sistema)\n");
+            } else {
+                sb.append("Ocupada: Sí (Estado indeterminado)\n");
+            }
+        }
+
+        sb.append("Características: \n");
 
         if (this.caracteristicas != null && !this.caracteristicas.isEmpty()) {
             for (Caracteristica caracteristica : this.caracteristicas) {

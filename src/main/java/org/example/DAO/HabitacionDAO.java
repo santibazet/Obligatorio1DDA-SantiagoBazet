@@ -354,6 +354,48 @@ public class HabitacionDAO extends ConnectionDAO {
     }
 
 
+    // Método para verificar si la habitación está ocupada por fuera del sistema
+    public boolean estaReservadaPorFuera(int idHabitacion) {
+        String query = "SELECT 1 FROM habitaciones h " +
+                "LEFT JOIN reservas_habitaciones rh ON h.idHabitacion = rh.idHabitacion " +
+                "LEFT JOIN reservas r ON rh.idReserva = r.idReserva " +
+                "WHERE h.idHabitacion = ? " +
+                "AND h.ocupada = true " +
+                "AND (r.idReserva IS NULL OR CURRENT_DATE NOT BETWEEN r.fechaInicio AND r.fechaVencimiento)";
+
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, idHabitacion);
+            ResultSet resultSet = statement.executeQuery();
+            return resultSet.next();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // Método para verificar si la habitación está ocupada por el sistema
+    public boolean estaOcupadaPorSistema(int idHabitacion) {
+        String query = "SELECT 1 FROM habitaciones h " +
+                "JOIN reservas_habitaciones rh ON h.idHabitacion = rh.idHabitacion " +
+                "JOIN reservas r ON rh.idReserva = r.idReserva " +
+                "WHERE h.idHabitacion = ? " +
+                "AND h.ocupada = true " +
+                "AND CURRENT_DATE BETWEEN r.fechaInicio AND r.fechaVencimiento";
+
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, idHabitacion);
+            ResultSet resultSet = statement.executeQuery();
+            return resultSet.next();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
+
 
 }
 

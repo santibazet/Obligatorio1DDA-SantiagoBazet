@@ -1,10 +1,9 @@
 package org.example.view;
 
 import org.example.controller.HotelController;
-import org.example.model.Hotel;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
-import java.util.List;
 
 public class HotelView {
 
@@ -30,40 +29,42 @@ public class HotelView {
             System.out.println("8. Salir");
             System.out.print("Seleccione una opción: ");
 
-            int option = scanner.nextInt();
-            scanner.nextLine();
+            try {
+                int option = scanner.nextInt();
+                scanner.nextLine();
 
-            switch (option) {
-                case 1:
-                    hotelController.createHotel();
-                    break;
-                case 2:
-                    hotelController.getAllHoteles();
-                    break;
-                case 3:
-                    hotelController.filterHotelsByCity();
-                    break;
-                case 4:
-                    hotelController.filterHotelsByName();
-                    break;
-                case 5:
-                    hotelController.filterHotelsByStars();
-                    break;
-                case 6:
-                    hotelController.updateHotel();
-                    break;
-                case 7:
-                    hotelController.deleteHotel();
-                    break;
-                case 8:
-                    System.out.println("Saliendo...");
-                    return;
-                default:
-                    System.out.println("Opción inválida. Por favor, ingrese una opción válida.");
+                switch (option) {
+                    case 1:
+                        hotelController.createHotel();
+                        break;
+                    case 2:
+                        hotelController.getAllHoteles();
+                        break;
+                    case 3:
+                        hotelController.filterHotelsByCity();
+                        break;
+                    case 4:
+                        hotelController.filterHotelsByName();
+                        break;
+                    case 5:
+                        hotelController.filterHotelsByStars();
+                        break;
+                    case 6:
+                        hotelController.updateHotel();
+                        break;
+                    case 7:
+                        hotelController.deleteHotel();
+                        break;
+                    case 8:
+                        System.out.println("Saliendo...");
+                        return;
+                    default:
+                        System.out.println("Opción inválida. Por favor, ingrese una opción válida.");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Entrada no válida. Por favor, ingrese un número entero.");
+                scanner.nextLine();
             }
         }
     }
-
-
-
 }
