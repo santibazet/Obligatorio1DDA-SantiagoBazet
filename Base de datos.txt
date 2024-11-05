@@ -1,0 +1,238 @@
+create database obddaprueba;
+use obddaprueba;
+
+CREATE TABLE paises (
+    idPais INT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE ciudades (
+    idCiudad INT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(100) NOT NULL,
+    idPais INT NOT NULL,
+    FOREIGN KEY (idPais) REFERENCES paises(idPais) ON DELETE CASCADE
+);
+
+CREATE TABLE tiposdocumento (
+    idTipoDocumento INT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE huespedes (
+    idHuesped INT PRIMARY KEY AUTO_INCREMENT,
+    idPais INT NOT NULL,
+    idTipoDocumento INT NOT NULL,
+    nombre VARCHAR(100) NOT NULL,
+    apaterno VARCHAR(100) NOT NULL,
+    amaterno VARCHAR(100) NOT NULL,
+    numDocumento VARCHAR(20) NOT NULL UNIQUE,
+    fechaNacimiento DATE NOT NULL,
+    telefono VARCHAR(20),
+    FOREIGN KEY (idPais) REFERENCES paises(idPais) ON DELETE CASCADE,
+    FOREIGN KEY (idTipoDocumento) REFERENCES tiposdocumento(idTipoDocumento) ON DELETE CASCADE
+);
+
+CREATE TABLE tiposcama (
+    idTipoCama INT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE tiposhabitacion (
+    idTipoHabitacion INT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE hoteles (
+    idHotel INT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(100) NOT NULL,
+    estrellas INT NOT NULL,
+    idCiudad INT NOT NULL,
+    FOREIGN KEY (idCiudad) REFERENCES ciudades(idCiudad) ON DELETE CASCADE
+);
+
+CREATE TABLE habitaciones (
+    idHabitacion INT PRIMARY KEY AUTO_INCREMENT,
+    idHotel INT NOT NULL,
+    idTipoHabitacion INT NOT NULL,
+    idTipoCama INT NOT NULL,
+    cantCamas INT NOT NULL,
+    ocupada BOOLEAN NOT NULL DEFAULT FALSE,
+    FOREIGN KEY (idHotel) REFERENCES hoteles(idHotel) ON DELETE CASCADE,
+    FOREIGN KEY (idTipoHabitacion) REFERENCES tiposhabitacion(idTipoHabitacion) ON DELETE CASCADE,
+    FOREIGN KEY (idTipoCama) REFERENCES tiposcama(idTipoCama) ON DELETE CASCADE
+);
+
+CREATE TABLE caracteristicas (
+    idCaracteristica INT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE habitaciones_caracteristicas (
+    idHabitacion INT NOT NULL,
+    idCaracteristica INT NOT NULL,
+    PRIMARY KEY (idHabitacion, idCaracteristica),
+    FOREIGN KEY (idHabitacion) REFERENCES habitaciones(idHabitacion) ON DELETE CASCADE,
+    FOREIGN KEY (idCaracteristica) REFERENCES caracteristicas(idCaracteristica) ON DELETE CASCADE
+);
+
+CREATE TABLE reservas (
+    idReserva INT PRIMARY KEY AUTO_INCREMENT,
+    idHuesped INT NOT NULL,
+    cantPersonas INT NOT NULL,
+    observaciones TEXT,
+    fechaRes DATE NOT NULL,
+    fechaVencimiento DATE NOT NULL,
+    fechaInicio DATE NOT NULL,
+    FOREIGN KEY (idHuesped) REFERENCES huespedes(idHuesped) ON DELETE CASCADE
+);
+
+CREATE TABLE reservas_habitaciones (
+    idReserva INT NOT NULL,
+    idHabitacion INT NOT NULL,
+    PRIMARY KEY (idReserva, idHabitacion),
+    FOREIGN KEY (idReserva) REFERENCES reservas(idReserva) ON DELETE CASCADE,
+    FOREIGN KEY (idHabitacion) REFERENCES habitaciones(idHabitacion) ON DELETE CASCADE
+);
+
+CREATE TABLE tarifas (
+    idTarifa INT PRIMARY KEY AUTO_INCREMENT,
+    idTipoHabitacion INT NOT NULL,
+    precio DECIMAL(10, 2) NOT NULL,
+    fechaFinVigencia DATE NOT NULL,
+    FOREIGN KEY (idTipoHabitacion) REFERENCES tiposhabitacion(idTipoHabitacion) ON DELETE CASCADE
+);
+
+CREATE TABLE tarifas_reservas (
+    idReserva INT NOT NULL,
+    idTarifa INT NOT NULL,
+    PRIMARY KEY (idReserva, idTarifa),
+    FOREIGN KEY (idReserva) REFERENCES reservas(idReserva) ON DELETE CASCADE,
+    FOREIGN KEY (idTarifa) REFERENCES tarifas(idTarifa) ON DELETE CASCADE
+);
+
+
+
+INSERT INTO paises (idPais, nombre) VALUES 
+(1, 'Argentina'),
+(2, 'Brasil'),
+(3, 'Uruguay'),
+(4, 'Chile'),
+(5, 'Perú');
+
+
+INSERT INTO ciudades (idCiudad, nombre, idPais) VALUES 
+(1, 'Buenos Aires', 1),
+(2, 'Rio de Janeiro', 2),
+(3, 'Montevideo', 3),
+(4, 'Santiago', 4),
+(5, 'Lima', 5);
+
+
+INSERT INTO hoteles (idHotel, nombre, estrellas, idCiudad) VALUES 
+(1, 'Hotel Buenos Aires', 5, 1),
+(2, 'Hotel Rio Maravilla', 4, 2),
+(3, 'Hotel Montevideo Central', 3, 3);
+
+
+INSERT INTO tiposhabitacion (idTipoHabitacion, nombre) VALUES 
+(1, 'Estándar'),
+(2, 'Suite'),
+(3, 'Suite Ejecutiva');
+
+
+INSERT INTO tiposcama (idTipoCama, nombre) VALUES 
+(1, 'Individual'),
+(2, 'Doble'),
+(3, 'Queen'),
+(4, 'King');
+
+
+INSERT INTO caracteristicas (idCaracteristica, nombre) VALUES 
+(1, 'Balcón'),
+(2, 'Vista al mar'),
+(3, 'Vista a la ciudad'),
+(4, 'Wi-Fi'),
+(5, 'TV'),
+(6, 'Aire acondicionado');
+
+
+INSERT INTO habitaciones (idHabitacion, idHotel, idTipoHabitacion, idTipoCama, cantCamas, ocupada) VALUES 
+(1, 1, 1, 1, 1, FALSE),
+(2, 1, 1, 2, 1, TRUE),
+(3, 1, 2, 3, 2, FALSE),
+(4, 1, 3, 4, 1, TRUE),
+(5, 1, 3, 4, 1, FALSE),
+
+(6, 2, 1, 1, 1, TRUE),
+(7, 2, 2, 2, 2, FALSE),
+(8, 2, 2, 3, 1, TRUE),
+(9, 2, 3, 4, 1, FALSE),
+(10, 2, 3, 4, 1, TRUE),
+
+(11, 3, 1, 1, 1, FALSE),
+(12, 3, 1, 2, 1, TRUE),
+(13, 3, 2, 3, 2, FALSE),
+(14, 3, 2, 3, 1, TRUE),
+(15, 3, 3, 4, 1, FALSE);
+
+-- ASIGNACIÓN DE CARACTERÍSTICAS A LAS HABITACIONES
+INSERT INTO habitaciones_caracteristicas (idHabitacion, idCaracteristica) VALUES 
+(1, 1), (1, 4), (1, 5),
+(2, 2), (2, 4), (2, 5),
+(3, 1), (3, 2), (3, 4), (3, 6),
+(4, 2), (4, 3), (4, 4), (4, 5), (4, 6),
+(5, 1), (5, 3), (5, 5),
+
+(6, 3), (6, 4), (6, 5),
+(7, 1), (7, 2), (7, 5),
+(8, 2), (8, 4), (8, 6),
+(9, 1), (9, 3), (9, 4), (9, 5),
+(10, 2), (10, 3), (10, 5), (10, 6),
+
+(11, 1), (11, 4), (11, 5),
+(12, 2), (12, 3), (12, 5),
+(13, 1), (13, 2), (13, 4), (13, 6),
+(14, 1), (14, 3), (14, 5), (14, 6),
+(15, 1), (15, 4), (15, 6);
+
+INSERT INTO tiposdocumento (idTipoDocumento, nombre) VALUES 
+(1, 'DNI'),
+(2, 'Pasaporte');
+
+INSERT INTO huespedes (idHuesped, idPais, idTipoDocumento, nombre, apaterno, amaterno, numDocumento, fechaNacimiento, telefono) VALUES 
+(1, 1, 1, 'Juan', 'Pérez', 'González', '12345678', '1990-05-21', '541123456789'),
+(2, 2, 2, 'Mariana', 'Silva', '', '87654321', '1985-08-13', '552123456789'),
+(3, 3, 1, 'Carlos', 'López', '', '54321678', '1992-12-30', '598123456789'),
+(4, 4, 1, 'Ana', 'Martínez', 'Rodríguez', '67891234', '1988-03-22', '562123456789'),
+(5, 5, 2, 'Lucía', 'Jiménez', '', '98765432', '1994-07-19', '519123456789');
+
+
+INSERT INTO reservas (idReserva, idHuesped, cantPersonas, observaciones, fechaRes, fechaVencimiento, fechaInicio) VALUES 
+(1, 1, 2, 'Habitación con vista al mar', '2024-10-01', '2024-10-15', '2024-10-05'),
+(2, 2, 1, 'Preferencia por aire acondicionado', '2024-10-10', '2024-10-20', '2024-10-12'),
+(3, 3, 3, '', '2024-11-01', '2024-11-10', '2024-11-03'),
+(4, 4, 1, 'Reserva anticipada', '2024-09-05', '2024-09-20', '2024-09-10'),
+(5, 5, 2, 'Sin preferencias', '2024-10-15', '2024-10-25', '2024-10-18');
+
+
+INSERT INTO reservas_habitaciones (idReserva, idHabitacion) VALUES 
+(1, 2),
+(2, 8),
+(3, 14),
+(4, 6),
+(5, 10);
+
+
+INSERT INTO tarifas (idTarifa, idTipoHabitacion, precio, fechaFinVigencia) VALUES 
+(1, 1, 100, '2024-12-31'),
+(2, 2, 150, '2024-12-31'),
+(3, 3, 200, '2024-12-31');
+
+
+INSERT INTO tarifas_reservas (idReserva, idTarifa) VALUES 
+(1, 2),
+(2, 3),
+(3, 1),
+(4, 1),
+(5, 3);
+
